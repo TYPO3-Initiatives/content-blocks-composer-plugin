@@ -1,13 +1,13 @@
 {
     "name": "sci/content-blocks-composer-plugin",
     "type": "composer-plugin",
-    "description": "TYPO3 Content Block registration API extension",
-    "license": [
-        "GPL-2.0-or-later"
-    ],
+    "description": "This composer plugin manages registration of Content Blocks for the Content Blocks API",
     "keywords": [
         "typo3",
         "content-blocks"
+    ],
+    "license": [
+        "GPL-2.0-or-later"
     ],
     "authors": [
         {
@@ -15,10 +15,11 @@
         }
     ],
     "require": {
-        "composer-plugin-api": "^1.0 || ^2.0"
+        "composer-plugin-api": "^1.0 || ^2.0",
+        "composer/composer": "^2.0"
     },
     "require-dev": {
-        "composer/composer": "^2.0",
+        "ergebnis/composer-normalize": "2.7.0",
         "friendsofphp/php-cs-fixer": "^2.16"
     },
     "config": {
