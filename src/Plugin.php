@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 /*
  * This file is part of the package sci/content-blocks-composer-plugin.
@@ -16,8 +18,11 @@ use Sci\ContentBlocksComposerPlugin\Installer\ContentBlockInstaller;
 
 class Plugin implements PluginInterface
 {
+    const LABEL = '<info>[ContentBlocksPlugin]</info>';
+
     public function activate(Composer $composer, IOInterface $io)
     {
+        $io->writeError('* <comment>activated</comment> ' . self::LABEL);
         $composer
             ->getInstallationManager()
             ->addInstaller(
@@ -27,11 +32,11 @@ class Plugin implements PluginInterface
 
     public function deactivate(Composer $composer, IOInterface $io)
     {
-        // no-op
+        $io->writeError('* <comment>deactivated</comment> ' . self::LABEL);
     }
 
     public function uninstall(Composer $composer, IOInterface $io)
     {
-        // no-op
+        $io->writeError('* <comment>uninstalled</comment> ' . self::LABEL);
     }
 }
