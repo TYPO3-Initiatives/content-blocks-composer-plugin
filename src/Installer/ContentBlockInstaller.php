@@ -1,4 +1,5 @@
-<?php declare(strict_types=1);
+<?php
+declare(strict_types=1);
 
 /*
  * This file is part of the package sci/content-blocks-composer-plugin.
@@ -13,10 +14,14 @@ use Composer\Composer;
 use Composer\Installer\LibraryInstaller;
 use Composer\IO\IOInterface;
 use Composer\Package\PackageInterface;
+use Composer\Repository\InstalledRepositoryInterface;
+use Composer\Util\Silencer;
 
 class ContentBlockInstaller extends LibraryInstaller
 {
     const BASEPATH = 'typo3conf/contentBlocks/';
+    const LABEL = '<info>[ContentBlockInstaller]</info>';
+    const TYPE = 'typo3-cms-contentblock';
 
     /**
      * @var string
@@ -32,37 +37,57 @@ class ContentBlockInstaller extends LibraryInstaller
         IOInterface $io,
         Composer $composer
     ) {
-        parent::__construct($io, $composer, 'typo3-cms-contentblock');
+        parent::__construct($io, $composer, self::TYPE);
 
         $this->io = $io;
-
-        $reflectionClass = new \ReflectionClass($composer->getConfig());
-        $reflectionProperty = $reflectionClass->getProperty('baseDir');
-        $reflectionProperty->setAccessible(true);
-
-        $baseDir = $reflectionProperty->getValue($composer->getConfig());
-        $rootPackage = $composer->getPackage();
-
-        $rootPackageExtraConfig = $rootPackage->getExtra() ?: [];
-        $typo3Config = $rootPackageExtraConfig['typo3/cms'] ?? [];
-
-        $webDir = $typo3Config['web-dir'] ?? 'public';
-
-        $this->cbsDir = $baseDir . DIRECTORY_SEPARATOR . $webDir . DIRECTORY_SEPARATOR . self::BASEPATH;
+        $webDir = $composer->getPackage()->getExtra()['typo3/cms']['web-dir'] ?? 'public';
+        $this->cbsDir = $webDir . DIRECTORY_SEPARATOR . self::BASEPATH;
     }
 
     public function supports($packageType)
     {
-        return $packageType === 'typo3-cms-contentblock';
+        return $packageType === self::TYPE;
     }
 
     public function getInstallPath(PackageInterface $package)
     {
         [$vendor, $packageName] = explode('/', $package->getPrettyName());
+        return $this->cbsDir . $packageName;
+    }
 
-        $cbDir = $this->cbsDir . $packageName;
-        $this->io->info(sprintf('Installing ‹%s› into ‹%s›', $package->getPrettyName(), $cbDir));
+    public function install(InstalledRepositoryInterface $repo, PackageInterface $package)
+    {
+        parent::install($repo, $package);
 
-        return $cbDir;
+        $this->io->writeError(
+            sprintf(
+                '    - Target: <comment>%s</comment> ' . self::LABEL,
+                $this->getInstallPath($package)
+            )
+        );
+    }
+
+    public function uninstall(InstalledRepositoryInterface $repo, PackageInterface $package)
+    {
+        parent::uninstall($repo, $package);
+
+        $installPath = $this->getInstallPath($package);
+        if (is_link($installPath)) {
+            $this->io->writeError(
+                sprintf(
+                    '    - Removing symlink <comment>%s</comment> ' . self::LABEL,
+                    $installPath
+                )
+            );
+            Silencer::call('unlink', $installPath);
+        } else {
+            $this->io->writeError(
+                sprintf(
+                    '    - Removing directory <comment>%s</comment> ' . self::LABEL,
+                    $installPath
+                )
+            );
+            Silencer::call('rmdir', $installPath);
+        }
     }
 }
