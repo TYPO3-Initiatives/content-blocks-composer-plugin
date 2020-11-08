@@ -1,0 +1,80 @@
+{
+    "name": "sci/content-blocks-composer-plugin",
+    "type": "composer-plugin",
+    "description": "TYPO3 Content Block registration API extension",
+    "license": [
+        "GPL-2.0-or-later"
+    ],
+    "keywords": [
+        "typo3",
+        "content-blocks"
+    ],
+    "authors": [
+        {
+            "name": "Structured Content Initiative"
+        }
+    ],
+    "require": {
+        "composer-plugin-api": "^1.0 || ^2.0"
+    },
+    "require-dev": {
+        "composer/composer": "^2.0",
+        "friendsofphp/php-cs-fixer": "^2.16"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "class": "Sci\\ContentBlocksComposerPlugin\\Plugin"
+    },
+    "autoload": {
+        "psr-4": {
+            "Sci\\ContentBlocksComposerPlugin\\": "src/"
+        }
+    },
+    "scripts": {
+        "fix-staged:cgl:php-cs": [
+            "php-cs-fixer --config=.php_cs.dist fix -v --using-cache=no `git diff --cached --name-only '*.php'`"
+        ],
+        "fix:cgl": [
+            "@fix:cgl:php-cs",
+            "@fix:cgl:composer"
+        ],
+        "fix:cgl:composer": [
+            "composer normalize --no-update-lock"
+        ],
+        "fix:cgl:php-cs": [
+            "php-cs-fixer --config=.php_cs.dist fix --using-cache=no"
+        ],
+        "test": [
+            "@test:cgl"
+        ],
+        "test-staged": [
+            "@test-staged:cgl"
+        ],
+        "test-staged:cgl": [
+            "@test-staged:cgl:php-cs",
+            "@test:cgl:composer"
+        ],
+        "test-staged:cgl:php-cs": [
+            "php-cs-fixer --config=.php_cs.dist fix -v --using-cache=no --dry-run `git diff --cached --name-only '*.php'`"
+        ],
+        "test:cgl": [
+            "@test:cgl:php-cs",
+            "@test:cgl:composer"
+        ],
+        "test:cgl:composer": [
+            "composer normalize --no-update-lock --dry-run"
+        ],
+        "test:cgl:php-cs": [
+            "php-cs-fixer --config=.php_cs.dist fix -v --using-cache=no --dry-run"
+        ],
+        "tests-for:ci": [
+            "@test"
+        ]
+    },
+    "support": {
+        "issues": "https://github.com/TYPO3-Initiatives/content-blocks-composer-plugin/issues",
+        "source": "https://github.com/TYPO3-Initiatives/content-blocks-composer-plugin"
+    }
+}
