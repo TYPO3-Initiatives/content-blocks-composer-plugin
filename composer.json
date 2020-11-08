@@ -15,10 +15,10 @@
         }
     ],
     "require": {
-        "composer-plugin-api": "^1.0 || ^2.0",
-        "composer/composer": "^2.0"
+        "composer-plugin-api": "^1.0 || ^2.0"
     },
     "require-dev": {
+        "composer/composer": "^2.0",
         "ergebnis/composer-normalize": "2.7.0",
         "friendsofphp/php-cs-fixer": "^2.16"
     },
