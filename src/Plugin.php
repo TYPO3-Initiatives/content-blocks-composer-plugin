@@ -12,8 +12,10 @@ declare(strict_types=1);
 namespace Typo3Contentblocks\ComposerPlugin;
 
 use Composer\Composer;
+use Composer\DependencyResolver\Operation\UninstallOperation;
 use Composer\IO\IOInterface;
 use Composer\Plugin\PluginInterface;
+use Typo3Contentblocks\ComposerPlugin\Configuration\Constants;
 use Typo3Contentblocks\ComposerPlugin\Installer\ContentBlockInstaller;
 
 class Plugin implements PluginInterface
@@ -22,7 +24,8 @@ class Plugin implements PluginInterface
 
     public function activate(Composer $composer, IOInterface $io)
     {
-        $io->debug('* <comment>activated</comment> ' . self::LABEL);
+        $io->debug('<comment>Plugin activated</comment> ' . self::LABEL);
+
         $composer
             ->getInstallationManager()
             ->addInstaller(
@@ -32,11 +35,17 @@ class Plugin implements PluginInterface
 
     public function deactivate(Composer $composer, IOInterface $io)
     {
-        $io->debug('* <comment>deactivated</comment> ' . self::LABEL);
+        $io->debug('<comment>Plugin deactivated</comment> ' . self::LABEL);
+
+        $composer
+            ->getInstallationManager()
+            ->removeInstaller(
+                new ContentBlockInstaller($io, $composer)
+            );
     }
 
     public function uninstall(Composer $composer, IOInterface $io)
     {
-        $io->debug('* <comment>uninstalled</comment> ' . self::LABEL);
+        $io->debug('<comment>Plugin uninstalling...</comment> ' . self::LABEL);
     }
 }

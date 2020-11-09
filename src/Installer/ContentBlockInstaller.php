@@ -15,13 +15,13 @@ use Composer\Installer\LibraryInstaller;
 use Composer\IO\IOInterface;
 use Composer\Package\PackageInterface;
 use Composer\Repository\InstalledRepositoryInterface;
-use Composer\Util\Silencer;
+use Symfony\Component\Filesystem\Exception\IOException;
+use Symfony\Component\Filesystem\Filesystem;
+use Typo3Contentblocks\ComposerPlugin\Configuration\Constants;
 
 class ContentBlockInstaller extends LibraryInstaller
 {
-    const BASEPATH = 'typo3conf/contentBlocks/';
     const LABEL = '<info>[ContentBlockInstaller]</info>';
-    const TYPE = 'typo3-cms-contentblock';
 
     /**
      * @var string
@@ -37,16 +37,16 @@ class ContentBlockInstaller extends LibraryInstaller
         IOInterface $io,
         Composer $composer
     ) {
-        parent::__construct($io, $composer, self::TYPE);
+        parent::__construct($io, $composer, Constants::TYPE);
 
         $this->io = $io;
         $webDir = $composer->getPackage()->getExtra()['typo3/cms']['web-dir'] ?? 'public';
-        $this->cbsDir = $webDir . DIRECTORY_SEPARATOR . self::BASEPATH;
+        $this->cbsDir = $webDir . DIRECTORY_SEPARATOR . Constants::BASEPATH;
     }
 
     public function supports($packageType)
     {
-        return $packageType === self::TYPE;
+        return $packageType === Constants::TYPE;
     }
 
     public function getInstallPath(PackageInterface $package)
@@ -61,8 +61,9 @@ class ContentBlockInstaller extends LibraryInstaller
 
         $this->io->writeError(
             sprintf(
-                '    - Target: <comment>%s</comment> ' . self::LABEL,
-                $this->getInstallPath($package)
+                '    - Target: <comment>%s</comment> %s',
+                $this->getInstallPath($package),
+                self::LABEL
             )
         );
     }
@@ -71,23 +72,48 @@ class ContentBlockInstaller extends LibraryInstaller
     {
         parent::uninstall($repo, $package);
 
+        $this->unregisterCb($package);
+    }
+
+    /**
+     * Unlink or remove installation target. We call it "unregistering".
+     *
+     * @param PackageInterface $package
+     */
+    public function unregisterCb(PackageInterface $package)
+    {
         $installPath = $this->getInstallPath($package);
-        if (is_link($installPath)) {
+        $fs = new Filesystem();
+
+        if (!$fs->exists($installPath)) {
             $this->io->writeError(
                 sprintf(
-                    '    - Removing symlink <comment>%s</comment> ' . self::LABEL,
-                    $installPath
+                    '    - <comment>%s</comment> is clean %s',
+                    $installPath,
+                    self::LABEL
                 )
             );
-            Silencer::call('unlink', $installPath);
-        } else {
+            return;
+        }
+
+        $this->io->writeError(
+            sprintf(
+                '    - Removing <comment>%s</comment> %s',
+                $installPath,
+                self::LABEL
+            )
+        );
+
+        try {
+            $fs->remove($installPath);
+        } catch (IOException $e) {
             $this->io->writeError(
                 sprintf(
-                    '    - Removing directory <comment>%s</comment> ' . self::LABEL,
-                    $installPath
+                    '%s <error>%s</error>',
+                    self::LABEL,
+                    $e->getMessage()
                 )
             );
-            Silencer::call('rmdir', $installPath);
         }
     }
 }

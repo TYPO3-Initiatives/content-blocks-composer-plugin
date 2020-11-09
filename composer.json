@@ -15,7 +15,8 @@
         }
     ],
     "require": {
-        "composer-plugin-api": "^1.0 || ^2.0"
+        "composer-plugin-api": "^1.0 || ^2.0",
+        "symfony/filesystem": "^5.1"
     },
     "require-dev": {
         "composer/composer": "^2.0",
