@@ -22,7 +22,7 @@ class Plugin implements PluginInterface
 
     public function activate(Composer $composer, IOInterface $io)
     {
-        $io->writeError('* <comment>activated</comment> ' . self::LABEL);
+        $io->debug('* <comment>activated</comment> ' . self::LABEL);
         $composer
             ->getInstallationManager()
             ->addInstaller(
