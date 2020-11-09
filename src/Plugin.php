@@ -32,11 +32,11 @@ class Plugin implements PluginInterface
 
     public function deactivate(Composer $composer, IOInterface $io)
     {
-        $io->writeError('* <comment>deactivated</comment> ' . self::LABEL);
+        $io->debug('* <comment>deactivated</comment> ' . self::LABEL);
     }
 
     public function uninstall(Composer $composer, IOInterface $io)
     {
-        $io->writeError('* <comment>uninstalled</comment> ' . self::LABEL);
+        $io->debug('* <comment>uninstalled</comment> ' . self::LABEL);
     }
 }
