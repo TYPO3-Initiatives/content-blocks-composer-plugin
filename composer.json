@@ -1,5 +1,5 @@
 {
-    "name": "sci/content-blocks-composer-plugin",
+    "name": "typo3-contentblocks/content-blocks-composer-plugin",
     "type": "composer-plugin",
     "description": "This composer plugin manages registration of Content Blocks for the Content Blocks API",
     "keywords": [
@@ -26,11 +26,11 @@
         "sort-packages": true
     },
     "extra": {
-        "class": "Sci\\ContentBlocksComposerPlugin\\Plugin"
+        "class": "Typo3Contentblocks\\ComposerPlugin\\Plugin"
     },
     "autoload": {
         "psr-4": {
-            "Sci\\ContentBlocksComposerPlugin\\": "src/"
+            "Typo3Contentblocks\\ComposerPlugin\\": "src/"
         }
     },
     "scripts": {
