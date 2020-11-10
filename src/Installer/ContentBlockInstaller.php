@@ -28,19 +28,20 @@ class ContentBlockInstaller extends LibraryInstaller
      */
     protected $cbsDir;
 
-    /**
-     * @var IOInterface
-     */
-    protected $io;
-
     public function __construct(
         IOInterface $io,
         Composer $composer
     ) {
         parent::__construct($io, $composer, Constants::TYPE);
 
-        $this->io = $io;
-        $webDir = $composer->getPackage()->getExtra()['typo3/cms']['web-dir'] ?? 'public';
+        $rootPackageName = $this->composer->getPackage()->getName();
+
+        // TYPO3 in core-dev (git) mode
+        $defaultWebDir = $rootPackageName === 'typo3/cms'
+            ? '.'
+            : 'public';
+
+        $webDir = $composer->getPackage()->getExtra()['typo3/cms']['web-dir'] ?? $defaultWebDir;
         $this->cbsDir = $webDir . DIRECTORY_SEPARATOR . Constants::BASEPATH;
     }
 
