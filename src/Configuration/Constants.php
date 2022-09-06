@@ -14,5 +14,5 @@ namespace Typo3Contentblocks\ComposerPlugin\Configuration;
 class Constants
 {
     const BASEPATH = 'typo3conf/contentBlocks/';
-    const TYPE = 'typo3-cms-contentblock';
+    const TYPE = 'typo3-contentblock';
 }
