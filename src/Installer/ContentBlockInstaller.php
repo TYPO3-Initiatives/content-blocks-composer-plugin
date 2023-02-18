@@ -58,6 +58,8 @@ class ContentBlockInstaller extends LibraryInstaller
 
             // remove potential double occurrence of webDir
             $this->cbsDir = str_replace($webDir . DIRECTORY_SEPARATOR . $webDir, $webDir, $this->cbsDir);
+            // make sure the cbsdir ends with a slash
+            $this->cbsDir = rtrim($this->cbsDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
         }
     }
 
