@@ -27,9 +27,6 @@
         "sort-packages": true
     },
     "extra": {
-        "branch-alias": {
-            "dev-master": "2.1.x-dev"
-        },
         "class": "Typo3Contentblocks\\ComposerPlugin\\Plugin"
     },
     "autoload": {
