@@ -37,30 +37,15 @@ class ContentBlockInstaller extends LibraryInstaller
     {
         parent::__construct($io, $composer, Constants::TYPE);
 
-        $rootPackageName = $this->composer->getPackage()->getName();
+        // make absolute cbsDir
+        $pluginConfig = $pluginConfig ?: Config::load($composer);
+        $this->cbsDir = $this->filesystem->normalizePath(
+            $pluginConfig->get('root-dir') . DIRECTORY_SEPARATOR
+            . Constants::BASEPATH
+        );
 
-        // TYPO3 in core-dev (git) mode
-        $defaultWebDir = $rootPackageName === 'typo3/cms'
-            ? '.'
-            : 'public';
-
-        $webDir = $composer->getPackage()->getExtra()['typo3/cms']['web-dir'] ?? $defaultWebDir;
-        $this->cbsDir = $webDir . DIRECTORY_SEPARATOR . Constants::BASEPATH;
-
-        // make cbsDir absolute
-        if ($rootPackageName !== 'typo3/cms') {
-            $pluginConfig = $pluginConfig ?: Config::load($composer);
-            $this->cbsDir = $this->filesystem->normalizePath(
-                $pluginConfig->get('root-dir') . DIRECTORY_SEPARATOR
-                . $webDir . DIRECTORY_SEPARATOR
-                . Constants::BASEPATH
-            );
-
-            // remove potential double occurrence of webDir
-            $this->cbsDir = str_replace($webDir . DIRECTORY_SEPARATOR . $webDir, $webDir, $this->cbsDir);
-            // make sure the cbsdir ends with a slash
-            $this->cbsDir = rtrim($this->cbsDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
-        }
+        // make sure the cbsdir ends with a slash
+        $this->cbsDir = rtrim($this->cbsDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
     }
 
     public function supports($packageType)
