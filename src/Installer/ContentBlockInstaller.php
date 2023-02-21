@@ -17,7 +17,6 @@ use Composer\Package\PackageInterface;
 use Composer\Repository\InstalledRepositoryInterface;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
-use TYPO3\CMS\Composer\Plugin\Config;
 use Typo3Contentblocks\ComposerPlugin\Configuration\Constants;
 
 class ContentBlockInstaller extends LibraryInstaller
@@ -31,18 +30,21 @@ class ContentBlockInstaller extends LibraryInstaller
 
     public function __construct(
         IOInterface $io,
-        Composer    $composer,
-        Config      $pluginConfig = null
+        Composer    $composer
     )
     {
         parent::__construct($io, $composer, Constants::TYPE);
 
         // make absolute cbsDir
-        $pluginConfig = $pluginConfig ?: Config::load($composer);
-        $this->cbsDir = $this->filesystem->normalizePath(
-            $pluginConfig->get('root-dir') . DIRECTORY_SEPARATOR
-            . Constants::BASEPATH
-        );
+        $rootPackageName = $this->composer->getPackage()->getName();
+
+        // TYPO3 in core-dev (git) mode
+        $defaultWebDir = $rootPackageName === 'typo3/cms'
+            ? '.'
+            : 'public';
+
+        $webDir = $composer->getPackage()->getExtra()['typo3/cms']['web-dir'] ?? $defaultWebDir;
+        $this->cbsDir = $this->filesystem->normalizePath(realpath($webDir) . DIRECTORY_SEPARATOR . Constants::BASEPATH);
 
         // make sure the cbsdir ends with a slash
         $this->cbsDir = rtrim($this->cbsDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
