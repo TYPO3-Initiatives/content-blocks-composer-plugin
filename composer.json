@@ -34,7 +34,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Typo3Contentblocks\\ComposerPlugin\\": "src"
+            "Typo3Contentblocks\\ComposerPlugin\\": "src/"
         }
     },
     "scripts": {
