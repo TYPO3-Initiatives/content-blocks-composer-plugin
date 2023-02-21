@@ -30,10 +30,12 @@ class ContentBlockInstaller extends LibraryInstaller
 
     public function __construct(
         IOInterface $io,
-        Composer $composer
-    ) {
+        Composer    $composer
+    )
+    {
         parent::__construct($io, $composer, Constants::TYPE);
 
+        // make absolute cbsDir
         $rootPackageName = $this->composer->getPackage()->getName();
 
         // TYPO3 in core-dev (git) mode
@@ -42,7 +44,10 @@ class ContentBlockInstaller extends LibraryInstaller
             : 'public';
 
         $webDir = $composer->getPackage()->getExtra()['typo3/cms']['web-dir'] ?? $defaultWebDir;
-        $this->cbsDir = $webDir . DIRECTORY_SEPARATOR . Constants::BASEPATH;
+        $this->cbsDir = $this->filesystem->normalizePath(realpath($webDir) . DIRECTORY_SEPARATOR . Constants::BASEPATH);
+
+        // make sure the cbsdir ends with a slash
+        $this->cbsDir = rtrim($this->cbsDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
     }
 
     public function supports($packageType)
